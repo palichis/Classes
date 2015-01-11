@@ -8,13 +8,14 @@
 
 class KariNivel1 : public cocos2d::Layer
 {
+  
 
-public:
+ public:
   // there's no 'id' in cpp, so we recommend returning the class instance pointer
 static cocos2d::CCScene* createScene();
   cocos2d::extension::ControlButton *standardButtonWithTitle(const char * title);
-  
-  // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
+  std::shared_ptr<cocos2d::Vector<cocos2d::Sprite*>>  target = std::make_shared<cocos2d::Vector<cocos2d::Sprite*>>();
+ // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
   virtual bool init();  
   CCSVParse* csvFile;
   int columna;
@@ -28,7 +29,8 @@ static cocos2d::CCScene* createScene();
   void touchDownAction(cocos2d::Object *sender, cocos2d::extension::Control::EventType controlEvent);
   void repeatForever(Node* sender);
   void stringSelection(float dt);
-  
+  void deleteWord(float dt);
+  bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
   
     // implement the "static create()" method manually
   CREATE_FUNC(KariNivel1);
