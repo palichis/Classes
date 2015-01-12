@@ -21,6 +21,8 @@ static cocos2d::CCScene* createScene();
   int columna;
   int fila;
   int tag;
+  int puntaje;
+  cocos2d::LabelTTF *scoreLabel;
   cocos2d::extension::ControlButton *button;
   cocos2d::Node *layer;
  // a selector callback
@@ -31,7 +33,7 @@ static cocos2d::CCScene* createScene();
   void stringSelection(float dt);
   void deleteWord(float dt);
   bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
-  
+  void words(int w, int h);
     // implement the "static create()" method manually
   CREATE_FUNC(KariNivel1);
 };
