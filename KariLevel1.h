@@ -14,6 +14,7 @@ class KariNivel1 : public cocos2d::Layer
   // there's no 'id' in cpp, so we recommend returning the class instance pointer
 static cocos2d::CCScene* createScene();
   cocos2d::extension::ControlButton *standardButtonWithTitle(const char * title);
+  cocos2d::extension::ControlButton *fraseButtonWithTitle(const char * title);
   std::shared_ptr<cocos2d::Vector<cocos2d::Sprite*>>  target = std::make_shared<cocos2d::Vector<cocos2d::Sprite*>>();
  // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
   virtual bool init();  
@@ -25,6 +26,7 @@ static cocos2d::CCScene* createScene();
   cocos2d::LabelTTF *scoreLabel;
   cocos2d::extension::ControlButton *button;
   cocos2d::Node *layer;
+  cocos2d::Node *frase;
  // a selector callback
   void menuCloseCallback(cocos2d::Ref* pSender);
   void spriteMoveFinished(Node* sender);
