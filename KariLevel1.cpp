@@ -27,6 +27,8 @@ bool KariNivel1::init()
     {
       return false;
     }
+  this->setTouchEnabled(true);
+
   //carga de archivo CSV
   csvFile = new CCSVParse();
   csvFile->openFile("frases.csv");
@@ -87,11 +89,15 @@ bool KariNivel1::init()
   this->addChild(fondo);
   this->addChild(scoreLabel,10);
   this->addChild(barrasuperior,9);
-  this->setTouchEnabled(true);
   this->addChild(frase, 100);
   schedule(schedule_selector(KariNivel1::stringSelection),1.0f);
   //  schedule(schedule_selector(KariNivel1::deleteWord),0.001f);
   return true;
+}
+
+void KariNivel1::TouchesEnded(Set* touches, Event* event)
+{
+  CCLOGWARN("ves");
 }
 
 void KariNivel1::stringSelection(float dt)
@@ -119,7 +125,7 @@ void KariNivel1::words(int w, int h)
     {
       col = rand() % csvFile->getCols();
       fil = rand() % csvFile->getRows();
-      if (tag%3 == 0)
+      if (tag%2 == 0)
         text = csvFile->getData(fila,col);
       else
         text = csvFile->getData(fil,col);
@@ -138,59 +144,116 @@ void KariNivel1::words(int w, int h)
   parent->setTag(tag);
   //  agrego sprint a vector
   target->pushBack(parent);
-  
+
+  //CCLOGWARN("ves");
   //Create a "one by one" touch event listener (processes one touch at a time)
-  auto listener1 = EventListenerTouchOneByOne::create();
+  //auto listener1 = EventListenerTouchOneByOne::create();
   // Example of using a lambda expression to implement onTouchBegan event callback function
-  listener1->onTouchBegan = [this](Touch* touch, Event* event){
+  /*listener1->onTouchBegan = [this](Touch* touch, Event* event){
     //llamo a evento para comparar posición de touch y eliminar sprite seleccionado
-    onTouchBegan(touch, event);
+    onTouchesBegan(touch, event);
     return true;
-  };
-  _eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, this);
+    };
+
+
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, this);*/
+  button->addTargetWithActionForControlEvents(this, cccontrol_selector(KariNivel1::touchDownAction), cocos2d::extension::Control::EventType::TOUCH_DOWN);  
   //creación de animación para desplazamiento de palabras
-  auto actionBy = MoveTo::create(10, Vec2(w,850));
+  auto actionBy = MoveTo::create(10,Vec2(w,800));// Vec2(w,screenSize.height));
   //acción para cuando el Sprite culmine el movimiento
   auto actionMoveDone = 
   CallFuncN::create( this, callfuncN_selector(KariNivel1::spriteMoveFinished));
   //ejecución de acción
-  parent->runAction( Sequence::create(actionBy, actionMoveDone,NULL));
-  addChild(parent ,-100);
+  parent->runAction( Sequence::create(actionBy, actionMoveDone,NULL,NULL));
+  addChild(parent, -100);
 }
 
-bool KariNivel1::onTouchBegan(Touch* touch, Event* event)
+bool KariNivel1::onTouchesBegan(Touch* touch, Event* event)
 {
-  for(auto sp : *target)
-    {
-      if (sp->boundingBox().containsPoint(Vec2(touch->getLocation().x,touch->getLocation().y)))
-        {
-          CCSprite *buton = static_cast<CCSprite*>(sp);
-          buton->setColor(Color3B(0, 0, 0));
+  cocos2d::extension::ControlButton *s;
+  CCLOGWARN("%d",target->size());
+  //for(auto sp : *target)
+  //{
+  //  if (sp->boundingBox().containsPoint(Vec2(touch->getLocation().x,touch->getLocation().y)))
+      //if (sp->boundingBox().containsPoint(Vec2(x,y)))
+  //    {
+  //      CCSprite *spbuton = static_cast<CCSprite*>(sp);
+  //      for(auto child : spbuton->getChildren())
+  //        {
+              //CCNode *child = spbuton->getChildren()->objectAtIndex(i);
+  //            s = dynamic_cast<  cocos2d::extension::ControlButton*>(child);
+  //            }
+  //        }
+          
+          //buton->setColor(Color3B(0, 0, 0));
           //sp->addChild(buton);
-          CCLOGWARN("%d",sp->getTag());
-          auto actionBy = MoveTo::create(0.5f, Vec2(touch->getLocation().x,-20));
-          //acción para cuando el Sprite culmine el movimiento
-          auto actionMoveDone = 
-            CallFuncN::create( this, callfuncN_selector(KariNivel1::spriteMoveFinished));
-          //ejecución de acción
-          //sp->runAction( Sequence::create(actionBy, actionMoveDone,NULL));
-          //this->removeChild(sp, true);
-          target->eraseObject(sp, true);
-          puntaje = puntaje + 10;
-          char text[256];
-          sprintf(text,"Puntaje %d",puntaje);
-          scoreLabel->setString(text);
-        }
-    }
+         
+  //      }
+//}
   return true;
 }  
+
+void KariNivel1::touchDownAction(Object *sender, cocos2d::extension::Control::EventType controlEvent)
+{
+  cocos2d::extension::ControlButton *s = (cocos2d::extension::ControlButton *)sender;
+  int val = 0;
+  if(s != 0) 
+    {
+      string title = s->getCurrentTitle();
+      //CCLOGWARN("%s",title.c_str());
+      for(auto childfrase : frase->getChildren())
+        {
+          cocos2d::extension::ControlButton *s1 = dynamic_cast<  cocos2d::extension::ControlButton*>(childfrase);
+          if(s1 != 0) 
+            {
+              string title1 = s1->getCurrentTitle();
+              //CCLOGWARN("%s",title1.c_str());
+              if(title1 == title)
+                {
+                  //CCLOGWARN("%d",sp->getTag());
+                  s->setOpacity(122);
+                  auto actionBy = FadeOut::create(0.5f);
+                  //acción para cuando el Sprite culmine el movimiento
+                  auto actionMoveDone = 
+                    CallFuncN::create( this, callfuncN_selector(KariNivel1::spriteMoveFinished));
+                  //ejecución de acción
+                  s->runAction(Sequence::create(actionBy,actionMoveDone , NULL));
+                  //this->removeChild(sp, true);
+                  //target->eraseObject(sp, true);
+                  puntaje = puntaje + 10;
+                  s1->setColor(Color3B(255, 0, 0));
+                  val = 1;
+                }
+            }
+        }
+      if (val == 0)
+        {
+          puntaje = puntaje - 2;
+        }
+    }
+
+  char text[256];
+  sprintf(text,"Puntaje %d",puntaje);
+  scoreLabel->setString(text);      
+  //_displayValueLabel->setString(String::createWithFormat("Touch Up Inside.")->getCString());
+  //this->removeChild(layer,true);
+  //  string title = s->getCurrentTitle();
+  
+  //CCLOGWARN(title.c_str());
+  //this->pFliteManager->talk("A")
+}
 
 void KariNivel1::spriteMoveFinished(Node* sender)
 {
   Sprite *sprite = (Sprite *)sender;
-  this->removeChild(sprite, true);
-  CCLOGWARN("%d",sprite->getTag());
+  //CCLOGWARN("%d",sprite->getTag());
+  int sttag = sprite->getTag();
   target->eraseObject(sprite, true);
+  //this->removeChild(sprite, true);
+  //sprite->removeFromParentAndCleanup(true);
+  sprite->removeFromParentAndCleanup(true);
+  //sprite->release();
+
 }  
 
 cocos2d::extension::ControlButton *KariNivel1::standardButtonWithTitle(const char * title)

@@ -9,8 +9,11 @@
 class KariNivel1 : public cocos2d::Layer
 {
   
+ private:
+  virtual bool onTouchesBegan(cocos2d::Touch *pTouches, cocos2d::Event *pEvent);
 
  public:
+  void TouchesEnded(cocos2d::Set* touches, cocos2d::Event* event);
   // there's no 'id' in cpp, so we recommend returning the class instance pointer
 static cocos2d::CCScene* createScene();
   cocos2d::extension::ControlButton *standardButtonWithTitle(const char * title);
@@ -34,7 +37,7 @@ static cocos2d::CCScene* createScene();
   void repeatForever(Node* sender);
   void stringSelection(float dt);
   void deleteWord(float dt);
-  bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+  //  bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
   void words(int w, int h);
     // implement the "static create()" method manually
   CREATE_FUNC(KariNivel1);
